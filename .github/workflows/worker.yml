@@ -1,0 +1,24 @@
+name: camunda-worker
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "*/5 * * * *"
+
+jobs:
+  work:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Poll Camunda and complete jobs
+        env:
+          CAMUNDA_CLIENT_ID: ${{ secrets.CAMUNDA_CLIENT_ID }}
+          CAMUNDA_CLIENT_SECRET: ${{ secrets.CAMUNDA_CLIENT_SECRET }}
+          CAMUNDA_REST_ADDRESS: ${{ secrets.CAMUNDA_REST_ADDRESS }}
+          CAMUNDA_OAUTH_URL: ${{ secrets.CAMUNDA_OAUTH_URL }}
+        run: |
+          for i in 1 2 3 4 5 6 7 8; do
+            node worker.mjs
+            sleep 5
+          done
